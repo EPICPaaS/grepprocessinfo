@@ -19,11 +19,15 @@ It's based on linux command: {top, iotop, lsof, nethogs}, so if you wanna run it
 	cp $GOPATH/src/github.com/EPICPaaS/grepprocessinfo/grepprocessinfo.sh /opt/grepprocessinfo/
 	cp $GOPATH/src/github.com/EPICPaaS/grepprocessinfo/grep_cron /etc/cron.d/
 
-And then, vi /opt/grepprocessinfo/config.cfg, replace with your right info 
+And then, vi /opt/grepprocessinfo/config.cfg, replace with your right info
+
+	....
 	[mysql]
 	url=root:123456@tcp(127.0.0.1:3306)/platform
+	...
 	
-And last,
+And last, restart crond service
+
 	service crond restart
 
 The system will execute grepprocessinfo program every 10 seconds.
