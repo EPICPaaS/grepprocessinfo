@@ -1,0 +1,13 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+HOME=/opt/grepprocessinfo/
+LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib
+
+## Run every 20 seconds
+*/1 * * * *   root /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
+*/1 * * * *   root sleep 10 ; /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
+*/1 * * * *   root sleep 20 ; /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
+*/1 * * * *   root sleep 30 ; /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
+*/1 * * * *   root sleep 40 ; /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
+*/1 * * * *   root sleep 50 ; /opt/grepprocessinfo/grepprocessinfo.sh >> /opt/grepprocessinfo/grepprocessinfo.log 2>&1
