@@ -9,7 +9,9 @@ It can fetch the cpu usage, memory usage, net sent, net received, disk write, di
 
 
 ## How to use It
-It's based on linux command: {top, iotop, lsof, nethogs}, so if you wanna run it, please install them  firstly.
+It's based on linux command: {top, iotop, lsof, nethogs}, so if you wanna run it, please install them  firstly. And then following below steps:
+
+### 1. Get me
 
 	go get github.com/EPICPaaS/grepprocessinfo
 	
@@ -19,14 +21,22 @@ It's based on linux command: {top, iotop, lsof, nethogs}, so if you wanna run it
 	cp $GOPATH/src/github.com/EPICPaaS/grepprocessinfo/grepprocessinfo.sh /opt/grepprocessinfo/
 	cp $GOPATH/src/github.com/EPICPaaS/grepprocessinfo/grep_cron /etc/cron.d/
 
-And then, vi /opt/grepprocessinfo/config.cfg, replace with your right info
+### 2. Init database
+    
+Create a database on your mysql server, and then execute following cmd
+
+	mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME < $GOPATH/src/github.com/EPICPaaS/grepprocessinfo/init.sql
+
+### 3. Config
+
+ vi /opt/grepprocessinfo/config.cfg, replace with your right info
 
 	....
 	[mysql]
 	url=root:123456@tcp(127.0.0.1:3306)/platform
 	...
 	
-And last, restart crond service
+### 4. Restart crond service
 
 	service crond restart
 

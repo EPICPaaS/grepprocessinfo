@@ -1,0 +1,22 @@
+CREATE TABLE `t_logs` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(20) DEFAULT NULL,
+  `port` int(11) DEFAULT '0',
+  `pid` int(11) DEFAULT NULL,
+  `cpu` decimal(10,2) DEFAULT NULL,
+  `memory` int(11) DEFAULT NULL,
+  `module` varchar(50) DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  `diskread` decimal(10,2) DEFAULT '0.00',
+  `diskwrite` decimal(10,2) DEFAULT '0.00',
+  `netsent` decimal(10,2) DEFAULT '0.00',
+  `netreceived` decimal(10,2) DEFAULT '0.00',
+  `dubboport` int(11) DEFAULT '0',
+  `nonetconn` int(11) DEFAULT '0',
+  `nofile` int(11) DEFAULT '0',
+  `sysnofile` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `T_logs_ip_IDX` (`ip`),
+  KEY `T_logs_time_IDX` (`time`),
+  KEY `T_logs_cpu_IDX` (`cpu`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8
