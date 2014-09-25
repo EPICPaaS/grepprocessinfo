@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+var t_ipv4 string = " IPv4 "
+var t_ipv6 string = " IPv6 "
+var t_unix string = " unix "
+
 //执行lsof命令
 func execLSOF(result chan string) {
 	top := exec.Command("lsof", "-bw")

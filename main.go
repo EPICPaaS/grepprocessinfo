@@ -19,9 +19,6 @@ import (
 var TIME_NOW time.Time
 
 var LOCAL_IP string = "127.0.0.1"
-var t_ipv4 string = " IPv4 "
-var t_ipv6 string = " IPv6 "
-var t_unix string = " unix "
 
 var configFile *goconfig.ConfigFile
 
@@ -86,42 +83,11 @@ func pipe_commands(commands ...*exec.Cmd) ([]byte, error) {
 	if err != nil {
 		log.Println("fetch failed")
 	}
+	for _, command := range commands[:len(commands)-1] {
+		command.Wait()
+	}
 	return final, nil
 }
-
-/**
-func handleOtherJavaLine(line string) Info {
-	fields := strings.Split(line, " ")
-	var newFields []string
-	//过滤掉空白field
-	for _, field := range fields {
-		field = strings.TrimSpace(field)
-		if len(field) == 0 {
-			continue
-		}
-		newFields = append(newFields, field)
-	}
-
-	var info Info
-	info.ip = LOCAL_IP
-	info.createdTime = TIME_NOW //将同一次统计生成的数据时间统一掉
-
-	//处理运行容器启动的JAVA进程
-	for index, field := range newFields {
-		//fmt.Println(index, " ", field)
-		if index == 1 {
-			info.pid = field
-		}
-
-		if index == 5 {
-			info.memory = field
-		}
-	}
-
-	info.moduleName = "unknown-java"
-	return info
-}
-**/
 
 func handleLine(line string, moduleName string, port string) Info {
 	fields := strings.Split(line, " ")
@@ -167,57 +133,17 @@ func handleLine(line string, moduleName string, port string) Info {
 		}
 	}
 
-	//通过后期异步方式获取
-	//info.cpu = execFetchCPU(info.pid)
-
 	return info
 }
 
-/**
-
-func execFetchCPU(pid string) (cpu string) {
-	top := exec.Command("top", "-n", "1", "-bp", pid)
-	out, err := top.CombinedOutput()
-	if err != nil {
-		log.Println("execFetchCPU", err)
-		return "-1.0"
-	}
-	s := string(out)
-	lines := strings.Split(s, "\n")
-	var nline string
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, pid+" ") {
-			nline = line
-		}
-	}
-	fields := strings.Split(nline, " ")
-	var newFields []string
-	//过滤掉空白field
-	for _, field := range fields {
-		field = strings.TrimSpace(field)
-		if len(field) == 0 {
-			continue
-		}
-		newFields = append(newFields, field)
-	}
-	//for i, field := range newFields {
-	//	log.Println(i, field)
-	//}
-	if len(newFields) > 8 {
-		return newFields[8]
-	}
-	return "-1.0"
-
-}
-**/
-
-func AssignMoreInfo(list []Info, topout, iotopout, lsofout string) []Info {
+func AssignMoreInfo(list []Info, topout, iotopout, lsofout string, nethogsOut []string) []Info {
 	var newList []Info
 	for _, info := range list {
 		info.cpu = fetchCPU(info.pid, topout)
 		info.diskRead, info.diskWrite = fetchDISKIO(info.pid, iotopout)
+		//log.Println(lsofout)
 		info.nonetconn, info.nofile, info.sysnofile = fetchLSOF(info.pid, lsofout)
+		info.netsent, info.netreceived = fetchNethogs(info.pid, nethogsOut)
 		//log.Println(info)
 		newList = append(newList, info)
 	}
@@ -300,10 +226,12 @@ func main() {
 	ioresult := make(chan string)
 	topresult := make(chan string)
 	lsofresult := make(chan string)
+	nethogsResult := make(chan []string)
 
 	go execIOTOP(ioresult)
 	go execTOP(topresult)
 	go execLSOF(lsofresult)
+	go execNethogs(nethogsResult)
 
 	dbType, err := configFile.GetString("main", "dbType")
 	checkErr(err)
@@ -313,9 +241,10 @@ func main() {
 	topout := <-topresult
 	iotopout := <-ioresult
 	lsofout := <-lsofresult
+	nethogsOut := <-nethogsResult
 	//log.Println(lsofout)
 
-	list = AssignMoreInfo(list, topout, iotopout, lsofout)
+	list = AssignMoreInfo(list, topout, iotopout, lsofout, nethogsOut)
 
 	//for _, info := range list {
 	//	log.Println(info)
