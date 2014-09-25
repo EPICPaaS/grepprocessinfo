@@ -19,4 +19,4 @@ CREATE TABLE `t_logs` (
   KEY `T_logs_ip_IDX` (`ip`),
   KEY `T_logs_time_IDX` (`time`),
   KEY `T_logs_cpu_IDX` (`cpu`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
